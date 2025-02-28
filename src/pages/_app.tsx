@@ -14,8 +14,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={client}>
         <RainbowKitProvider>
-          <NavigationHeader />
-          <Component {...pageProps} />
+          <div className="min-h-screen bg-background">
+            <NavigationHeader />
+            <Component {...pageProps} />
+          </div>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
