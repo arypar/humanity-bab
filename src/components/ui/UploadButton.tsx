@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, FileText } from "lucide-react";
+import { Upload, X, FileText, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UploadButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -10,10 +10,28 @@ interface UploadButtonProps extends React.InputHTMLAttributes<HTMLInputElement> 
   className?: string;
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
 const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
   ({ onFileSelect, className, ...props }, ref) => {
     const [isDragging, setIsDragging] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+    const [error, setError] = React.useState<string | null>(null);
+
+    const validateFile = (file: File): boolean => {
+      if (file.type !== "application/pdf") {
+        setError("Please upload a PDF file");
+        return false;
+      }
+      
+      if (file.size > MAX_FILE_SIZE) {
+        setError("File size must be less than 5MB");
+        return false;
+      }
+      
+      setError(null);
+      return true;
+    };
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -29,7 +47,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
       setIsDragging(false);
       
       const file = e.dataTransfer.files[0];
-      if (file && file.type === "application/pdf") {
+      if (file && validateFile(file)) {
         setSelectedFile(file);
         onFileSelect?.(file);
       }
@@ -37,7 +55,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file && file.type === "application/pdf") {
+      if (file && validateFile(file)) {
         setSelectedFile(file);
         onFileSelect?.(file);
       }
@@ -46,6 +64,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
     const handleRemoveFile = (e: React.MouseEvent) => {
       e.preventDefault();
       setSelectedFile(null);
+      setError(null);
       onFileSelect?.(null);
       if (ref && 'current' in ref && ref.current) {
         ref.current.value = '';
@@ -69,7 +88,19 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
         onDrop={handleDrop}
       >
         <AnimatePresence mode="wait">
-          {selectedFile ? (
+          {error ? (
+            <motion.div
+              key="error-message"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center gap-2 flex-1 text-red-200"
+              onClick={() => setError(null)}
+            >
+              <AlertCircle className="w-5 h-5" />
+              <span>{error}</span>
+            </motion.div>
+          ) : selectedFile ? (
             <motion.div
               key="file-info"
               initial={{ opacity: 0 }}
@@ -103,7 +134,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
         <input
           type="file"
           className="hidden"
-          accept=".pdf"
+          accept="application/pdf"
           onChange={handleFileSelect}
           ref={ref}
           {...props}
