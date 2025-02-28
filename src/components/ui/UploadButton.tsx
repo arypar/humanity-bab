@@ -1,18 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { Upload } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Upload, X, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UploadButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  onFileSelect?: (file: File) => void;
+  onFileSelect?: (file: File | null) => void;
   className?: string;
 }
 
 const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
   ({ onFileSelect, className, ...props }, ref) => {
     const [isDragging, setIsDragging] = React.useState(false);
+    const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
@@ -29,6 +30,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
       
       const file = e.dataTransfer.files[0];
       if (file && file.type === "application/pdf") {
+        setSelectedFile(file);
         onFileSelect?.(file);
       }
     };
@@ -36,7 +38,17 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file && file.type === "application/pdf") {
+        setSelectedFile(file);
         onFileSelect?.(file);
+      }
+    };
+
+    const handleRemoveFile = (e: React.MouseEvent) => {
+      e.preventDefault();
+      setSelectedFile(null);
+      onFileSelect?.(null);
+      if (ref && 'current' in ref && ref.current) {
+        ref.current.value = '';
       }
     };
 
@@ -56,8 +68,38 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Upload className="w-5 h-5" />
-        <span>Upload PDF</span>
+        <AnimatePresence mode="wait">
+          {selectedFile ? (
+            <motion.div
+              key="file-info"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-2 flex-1"
+            >
+              <FileText className="w-5 h-5" />
+              <span className="flex-1 truncate">{selectedFile.name}</span>
+              <button
+                onClick={handleRemoveFile}
+                className="p-1 hover:bg-primary-foreground/20 rounded-md transition-colors"
+                aria-label="Remove file"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="upload-prompt"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-2"
+            >
+              <Upload className="w-5 h-5" />
+              <span>Upload PDF</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <input
           type="file"
           className="hidden"
