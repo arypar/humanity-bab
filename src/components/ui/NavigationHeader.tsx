@@ -20,7 +20,7 @@ const NavigationHeader: React.FC = () => {
               href="/"
               className="text-xl font-bold transition-colors duration-500 group-hover:text-orange-500"
             >
-              NonprofitMe
+              give.fun
             </Link>
           </div>
           <ul className="flex space-x-4 items-center">
@@ -39,7 +39,7 @@ const NavigationHeader: React.FC = () => {
                             href="/"
                             className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded whitespace-nowrap"
                           >
-                            Option 1
+                            Option 
                           </Link>
                         </NavigationMenuLink>
                       </li>
@@ -60,6 +60,16 @@ const NavigationHeader: React.FC = () => {
                             className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded whitespace-nowrap"
                           >
                             Option 3
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            href="/enroll"
+                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded whitespace-nowrap"
+                          >
+                            Enroll Nonprofit
                           </Link>
                         </NavigationMenuLink>
                       </li>
