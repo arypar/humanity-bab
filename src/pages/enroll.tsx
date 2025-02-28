@@ -38,12 +38,12 @@ const EnrollPage: React.FC = () => {
   const [errors, setErrors] = React.useState<{
     orgName?: string;
     ein?: string;
-    pdf?: string;
     submit?: string;
   }>({});
   const [isUploading, setIsUploading] = React.useState(false);
   const [uploadSuccess, setUploadSuccess] = React.useState(false);
   const [verificationStatus, setVerificationStatus] = React.useState<VerificationStatus>({ step: 'idle' });
+  const [hasPdfUploaded, setHasPdfUploaded] = React.useState(false);
   
   const loadingSteps = {
     scanning: {
@@ -295,15 +295,19 @@ const EnrollPage: React.FC = () => {
                   <Label>501(c)(3) Determination Letter</Label>
                   <div className="p-6 text-center">
                     <UploadButton
-                      onLoadStart={() => setIsUploading(true)}
+                      onLoadStart={() => {
+                        setIsUploading(true);
+                        setUploadSuccess(false);
+                      }}
                       onSuccess={() => {
                         setIsUploading(false);
                         setUploadSuccess(true);
+                        setHasPdfUploaded(true);
                       }}
                       onError={() => {
                         setIsUploading(false);
                         setUploadSuccess(false);
-                        setErrors({ ...errors, pdf: "Failed to upload file. Please try again." });
+                        setHasPdfUploaded(false);
                       }}
                     />
                     <p className="text-sm text-gray-500 mt-2">
@@ -317,15 +321,6 @@ const EnrollPage: React.FC = () => {
                       >
                         <CheckCircle className="w-4 h-4" />
                         <span>File uploaded successfully</span>
-                      </motion.p>
-                    )}
-                    {errors.pdf && (
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-sm text-red-500 mt-2"
-                      >
-                        {errors.pdf}
                       </motion.p>
                     )}
                   </div>

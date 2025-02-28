@@ -111,14 +111,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 flex flex-col items-center">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="space-y-8"
+        className="space-y-8 w-full max-w-6xl"
       >
-        <motion.div variants={itemVariants}>
+        <motion.div variants={itemVariants} className="text-center">
           <h1 className="text-3xl font-bold text-emerald-800 mb-2">
             Organization Dashboard
           </h1>
@@ -180,7 +180,7 @@ export default function Dashboard() {
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="flex gap-4">
+        <motion.div variants={itemVariants} className="flex gap-4 justify-center">
           <Button
             className="bg-emerald-600 hover:bg-emerald-700"
             onClick={() => router.push("/settings")}

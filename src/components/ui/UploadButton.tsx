@@ -7,23 +7,21 @@ import { cn } from "@/lib/utils";
 
 interface UploadButtonProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onFileSelect?: (file: File | null) => void;
+  onLoadStart?: () => void;
+  onSuccess?: () => void;
+  onError?: () => void;
   className?: string;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
 
 const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
-  ({ onFileSelect, className, ...props }, ref) => {
+  ({ onFileSelect, onLoadStart, onSuccess, onError, className, ...props }, ref) => {
     const [isDragging, setIsDragging] = React.useState(false);
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
     const [error, setError] = React.useState<string | null>(null);
 
     const validateFile = (file: File): boolean => {
-      if (file.type !== "application/pdf") {
-        setError("Please upload a PDF file");
-        return false;
-      }
-      
       if (file.size > MAX_FILE_SIZE) {
         setError("File size must be less than 5MB");
         return false;
@@ -127,7 +125,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
               className="flex items-center gap-2"
             >
               <Upload className="w-5 h-5" />
-              <span>Upload PDF</span>
+              <span>Upload File</span>
             </motion.div>
           )}
         </AnimatePresence>
