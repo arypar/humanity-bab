@@ -1,14 +1,10 @@
-import '../styles/globals.css';
+import '@/styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import type { AppProps } from 'next/app';
 import NavigationHeader from '@/components/ui/NavigationHeader';
-import TransactionAnalysis from '@/components/ui/TransactionAnalysis';
-import Dashboard from '@/components/ui/Dashboard';
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import UploadButton from '@/components/ui/UploadButton';
 import { config } from '../wagmi';
 
 const client = new QueryClient();
@@ -19,9 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={client}>
         <RainbowKitProvider>
           <NavigationHeader />
-          <div className="mx-auto p-6">
-            <Component {...pageProps} />
-          </div>
+          <Component {...pageProps} />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
