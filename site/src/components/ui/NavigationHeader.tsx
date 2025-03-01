@@ -1,9 +1,19 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectWallet } from "./ConnectWallet";
+
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  return isClient ? <>{children}</> : null;
+}
 
 const NavigationHeader: React.FC = () => {
   const pathname = usePathname();
@@ -37,7 +47,9 @@ const NavigationHeader: React.FC = () => {
               </Link>
             </motion.li>
           </AnimatePresence>
-          <ConnectButton />
+          <ClientOnly>
+            <ConnectWallet />
+          </ClientOnly>
         </ul>
       </nav>
     </header>

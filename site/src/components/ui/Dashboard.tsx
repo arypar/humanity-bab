@@ -5,6 +5,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, CheckCircle, Shield, Wallet, X } from "lucide-react";
+import { DonationDialog } from "./DonationDialog";
+import { useAccount } from "wagmi";
+import { useDonationContract } from "@/hooks/useDonationContract";
+
+// Client-side only wrapper to prevent hydration mismatch
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [isClient, setIsClient] = React.useState(false);
+  
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  return isClient ? <>{children}</> : null;
+}
 
 interface Campaign {
   id: string;
@@ -34,6 +48,11 @@ const Dashboard: React.FC = () => {
   const [selectedCampaign, setSelectedCampaign] = React.useState<Campaign | null>(null);
   const [showCampaigns, setShowCampaigns] = React.useState(false);
   const [buttonPosition, setButtonPosition] = React.useState({ x: 0, y: 0 });
+  const [showDonationDialog, setShowDonationDialog] = React.useState(false);
+  
+  // Get verified nonprofits
+  const { useAllNonprofits } = useDonationContract();
+  const { data: nonprofitAddresses, isLoading: loadingNonprofits } = useAllNonprofits();
 
   // Mock data - replace with real API data
   const campaigns: Campaign[] = [
@@ -66,9 +85,13 @@ const Dashboard: React.FC = () => {
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setButtonPosition({ x: e.clientX, y: e.clientY });
-    setShowCampaigns(true);
+    
+    // Open donation dialog instead of campaigns
+    setShowDonationDialog(true);
   };
+
+  // Default nonprofit address for testing - this would come from your contract in production
+  const defaultNonprofitAddress = '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199';
 
   return (
     <div className="w-full mx-auto p-6 max-w-7xl flex flex-col items-center justify-center min-h-screen">
@@ -122,18 +145,36 @@ const Dashboard: React.FC = () => {
 
         {/* Centered Donate Now Button */}
         <div className="flex flex-col items-center justify-center py-2 px-4">
-          <Button 
-            size="lg" 
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
-            onClick={handleButtonClick}
-          >
-            <span className="flex items-center gap-2">
-              <Heart className="h-5 w-5" />
-              Donate Now
-            </span>
-          </Button>
+          <ClientOnly>
+            <Button 
+              size="lg" 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+              onClick={handleButtonClick}
+            >
+              <span className="flex items-center gap-2">
+                <Heart className="h-5 w-5" />
+                Donate Now
+              </span>
+            </Button>
+          </ClientOnly>
         </div>
       </motion.div>
+
+      {/* Donation Dialog */}
+      <ClientOnly>
+        <DonationDialog 
+          isOpen={showDonationDialog}
+          onClose={() => setShowDonationDialog(false)}
+          // If there are verified nonprofits from the contract, use the first one
+          // Otherwise use a default address for testing
+          nonprofitAddress={
+            nonprofitAddresses && Array.isArray(nonprofitAddresses) && nonprofitAddresses.length > 0 
+              ? (nonprofitAddresses[0] as `0x${string}`) 
+              : (defaultNonprofitAddress as `0x${string}`)
+          }
+          nonprofitName="Verified Nonprofit"
+        />
+      </ClientOnly>
 
       {/* Expanded Campaign Modal */}
       <AnimatePresence>
