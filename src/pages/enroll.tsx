@@ -85,10 +85,12 @@ const EnrollPage: React.FC = () => {
             }
           })
       });
-      console.log(response);
-
-
+      if(response.status == 200) {
         setVerificationStatus({ step: "complete", orgDetails: data.organization });
+      } else {
+        setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
+      }
+
       } else {
         setVerificationStatus({ step: "failed", error: data.error });
       }
