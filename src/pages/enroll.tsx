@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAccount } from 'wagmi';
 import { Label } from "@/components/ui/label";
+import { useAccount } from "wagmi";
 import { Upload, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import UploadButton from "@/components/ui/UploadButton";
 
@@ -63,17 +63,7 @@ const EnrollPage: React.FC = () => {
 
     try {
 
-      const response = await fetch("/api/verifyEIN", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ein, orgName }),
-      });
-
-      const data = await response.json();
-      console.log("Received API response:", data);
       
-      if (data.success) {
-
         const response = await fetch('https://issuer.humanity.org/credentials/issue', {
           method: 'POST',
           headers: {
@@ -87,15 +77,14 @@ const EnrollPage: React.FC = () => {
             }
           })
       });
-      if(response.status == 200) {
-        setVerificationStatus({ step: "complete", orgDetails: data.organization });
+      if(response.status == 200 || response.status == 201) {
+        const responseData = await response.json();
+        setVerificationStatus({ step: "complete", orgDetails: ["BRuh"]});
+        setCredential(responseData.credential);
       } else {
         setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
       }
-
-      } else {
-        setVerificationStatus({ step: "failed", error: data.error });
-      }
+    
     } catch (error) {
       console.error("Error during EIN verification:", error);
       setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
@@ -160,7 +149,6 @@ const EnrollPage: React.FC = () => {
                         setHasPdfUploaded(false);
                       }}
                 />
-
                 <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700">
                   Submit Application
                 </Button>
@@ -180,7 +168,10 @@ const EnrollPage: React.FC = () => {
                 <h3 className="text-2xl font-bold text-emerald-800 mb-4">Verification Complete!</h3>
                 <p className="text-gray-700">EIN Verified: {verificationStatus.orgDetails?.[0]}</p>
                 <p className="text-gray-700">Organization: {verificationStatus.orgDetails?.[1]}</p>
-                <p className="text-gray-700">Credential: {credential}</p>
+                <p className="text-gray-700">Credential: {typeof credential === 'object' ? 
+                  JSON.stringify(credential).substring(0, 50) + '...' : 
+                  credential}
+                </p>
               </div>
             )}
           </CardContent>
