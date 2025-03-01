@@ -17,6 +17,8 @@ interface VerificationStatus {
 }
 
 const EnrollPage: React.FC = () => {
+  const { address } = useAccount(); 
+  const [credential, setCredential] = React.useState("");
   const [orgName, setOrgName] = React.useState("");
   const [ein, setEin] = React.useState("");
   const [errors, setErrors] = React.useState<{ orgName?: string; ein?: string; submit?: string }>({});
@@ -49,7 +51,6 @@ const EnrollPage: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    const { address } = useAccount(); 
     e.preventDefault();
     setErrors({});
   
@@ -178,6 +179,7 @@ const EnrollPage: React.FC = () => {
                 <h3 className="text-2xl font-bold text-emerald-800 mb-4">Verification Complete!</h3>
                 <p className="text-gray-700">EIN Verified: {verificationStatus.orgDetails?.[0]}</p>
                 <p className="text-gray-700">Organization: {verificationStatus.orgDetails?.[1]}</p>
+                <p className="text-gray-700">Credential: {credential}</p>
               </div>
             )}
           </CardContent>
