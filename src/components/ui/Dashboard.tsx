@@ -62,102 +62,68 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="w-full mx-auto p-6 max-w-7xl">
+    <div className="w-full mx-auto p-6 max-w-7xl flex flex-col items-center justify-center min-h-screen">
       {/* Hero Section */}
-      <div className="mb-12 text-center">
+      <div className="mb-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="space-y-6"
+          className="space-y-8"
         >
-          <h1 className="text-4xl font-bold text-emerald-800 md:text-5xl">
+          <h1 className="text-5xl font-bold text-emerald-800 md:text-6xl">
             Tax-Deductible Crypto Donations
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Make charitable donations in cryptocurrency and receive instant tax deduction receipts. 
             Secure, transparent, and fully compliant with IRS regulations.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg">
-              <CheckCircle className="w-5 h-5" />
-              <span>Instant Tax Receipts</span>
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
+            <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-5 py-3 rounded-lg">
+              <CheckCircle className="w-6 h-6" />
+              <span className="text-lg">Instant Tax Receipts</span>
             </div>
-            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg">
-              <Shield className="w-5 h-5" />
-              <span>IRS Compliant</span>
+            <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-5 py-3 rounded-lg">
+              <Shield className="w-6 h-6" />
+              <span className="text-lg">IRS Compliant</span>
             </div>
-            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg">
-              <Wallet className="w-5 h-5" />
-              <span>Multiple Chains</span>
+            <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-5 py-3 rounded-lg">
+              <Wallet className="w-6 h-6" />
+              <span className="text-lg">Multiple Chains</span>
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Call to Action */}
+      {/* Try It Out Section with Donate Now button */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mb-8 text-center"
+        className="bg-emerald-50 rounded-xl p-6 w-full max-w-md"
       >
-        <h2 className="text-2xl font-semibold text-gray-800 mb-3">
-          Try It Out
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Make your first tax-deductible donation to one of these verified campaigns
-        </p>
-      </motion.div>
+        <div className="text-center mb-2">
+          <h2 className="text-xl font-semibold text-gray-800 mb-1">
+            Try It Out
+          </h2> 
+          <p className="text-sm text-gray-600">
+            Make a tax-deductible donation to a verified campaign
+          </p>
+        </div>
 
-      {/* Centered Campaigns Grid */}
-      <div className="flex justify-center">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full place-items-center"
-        >
-          {campaigns.map((campaign) => {
-            const progress = (campaign.currentAmount / campaign.goalAmount) * 100;
-            
-            return (
-              <motion.div
-                key={campaign.id}
-                variants={itemVariants}
-                className="group cursor-pointer w-full"
-                onClick={() => setSelectedCampaign(campaign)}
-              >
-                <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <CardContent className="p-4">
-                    <h3 className="text-base font-semibold text-emerald-700 truncate mb-3">
-                      {campaign.title}
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress}%` }}
-                          transition={{ duration: 1, ease: "easeOut" }}
-                          className="h-full bg-emerald-500 rounded-full"
-                        />
-                      </div>
-                      <div className="flex justify-between items-baseline text-sm">
-                        <span className="font-medium text-emerald-700">
-                          ${campaign.currentAmount.toLocaleString()}
-                        </span>
-                        <span className="text-gray-500 text-xs">
-                          of ${campaign.goalAmount.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-      </div>
+        {/* Centered Donate Now Button */}
+        <div className="flex flex-col items-center justify-center py-2 px-4">
+          <Button 
+            size="lg" 
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+          >
+            <span className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              Donate Now
+            </span>
+          </Button>
+        </div>
+      </motion.div>
 
       {/* Expanded Campaign Modal */}
       <AnimatePresence>
