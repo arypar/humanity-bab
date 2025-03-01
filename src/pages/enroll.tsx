@@ -49,7 +49,39 @@ const EnrollPage: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+  
+    if (!validateForm()) {
+      return;
+    }
 
+    console.log("Submitting verification request...");
+    setVerificationStatus({ step: "verifying" });
+
+    try {
+      const response = await fetch("/api/verifyEIN", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ein, orgName }),
+      });
+
+      const data = await response.json();
+      console.log("Received API response:", data);
+
+      if (data.success) {
+        setVerificationStatus({ step: "complete", orgDetails: data.organization });
+      } else {
+        setVerificationStatus({ step: "failed", error: data.error });
+      }
+    } catch (error) {
+      console.error("Error during EIN verification:", error);
+      setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
+    }
+  };
+
+/*
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -90,6 +122,7 @@ const EnrollPage: React.FC = () => {
       setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
     }
   };
+*/
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
