@@ -75,9 +75,9 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
         whileTap={{ scale: 0.98 }}
         className={cn(
           "flex items-center gap-2 px-4 py-3 rounded-xl font-medium",
-          "bg-primary text-primary-foreground shadow-sm",
+          "bg-black text-white shadow-sm",
           "transition-colors duration-200",
-          isDragging ? "ring-2 ring-ring" : "hover:bg-primary/90",
+          isDragging ? "ring-2 ring-ring" : "hover:bg-gray-800",
           "cursor-pointer select-none",
           className
         )}
@@ -104,13 +104,13 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-2 flex-1"
+              className="flex items-center gap-2 flex-1 text-white"
             >
               <FileText className="w-5 h-5" />
               <span className="flex-1 truncate">{selectedFile.name}</span>
               <button
                 onClick={handleRemoveFile}
-                className="p-1 hover:bg-primary-foreground/20 rounded-md transition-colors"
+                className="p-1 hover:bg-gray-700 rounded-md transition-colors"
                 aria-label="Remove file"
               >
                 <X className="w-5 h-5" />
@@ -122,7 +122,7 @@ const UploadButton = React.forwardRef<HTMLInputElement, UploadButtonProps>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-white"
             >
               <Upload className="w-5 h-5" />
               <span>Upload File</span>

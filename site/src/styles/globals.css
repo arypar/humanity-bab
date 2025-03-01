@@ -19,20 +19,20 @@
 }
 
 :root {
-  --background: #0d1314;
-  --foreground: #6cf93d;
+  --background: #ffffff;
+  --foreground: #0d1314;
   --card: #0d1314;
-  --card-foreground: #6cf93d;
+  --card-foreground: #639851;
   --popover: #0d1314;
-  --popover-foreground: #6cf93d;
-  --primary: #6cf93d;
+  --popover-foreground: #0d1314;
+  --primary: #0d1314;
   --primary-foreground: #0d1314;
   --secondary: #1a2425;
-  --secondary-foreground: #6cf93d;
+  --secondary-foreground: #0d1314;
   --muted: #1a2425;
   --muted-foreground: #4ab92e;
   --accent: #1a2425;
-  --accent-foreground: #6cf93d;
+  --accent-foreground: #0d1314;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: #1a2425;
@@ -45,11 +45,11 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
   --sidebar: #0f1718;
-  --sidebar-foreground: #6cf93d;
-  --sidebar-primary: #6cf93d;
+  --sidebar-foreground: #0d1314;
+  --sidebar-primary: #0d1314;
   --sidebar-primary-foreground: #0d1314;
   --sidebar-accent: #1a2425;
-  --sidebar-accent-foreground: #6cf93d;
+  --sidebar-accent-foreground: #0d1314;
   --sidebar-border: #1a2425;
   --sidebar-ring: #4ab92e;
   --font-sans: 'Atlassian Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -57,19 +57,19 @@
 
 .dark {
   --background: #0d1314;
-  --foreground: #6cf93d;
+  --foreground: #0d1314;
   --card: #0d1314;
-  --card-foreground: #6cf93d;
+  --card-foreground: #0d1314;
   --popover: #0d1314;
-  --popover-foreground: #6cf93d;
-  --primary: #6cf93d;
+  --popover-foreground: #0d1314;
+  --primary: #0d1314;
   --primary-foreground: #0d1314;
   --secondary: #1a2425;
-  --secondary-foreground: #6cf93d;
+  --secondary-foreground: #0d1314;
   --muted: #1a2425;
   --muted-foreground: #4ab92e;
   --accent: #1a2425;
-  --accent-foreground: #6cf93d;
+  --accent-foreground: #0d1314;
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: #1a2425;
@@ -81,11 +81,11 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: #0f1718;
-  --sidebar-foreground: #6cf93d;
-  --sidebar-primary: #6cf93d;
+  --sidebar-foreground: #0d1314;
+  --sidebar-primary: #0d1314;
   --sidebar-primary-foreground: #0d1314;
   --sidebar-accent: #1a2425;
-  --sidebar-accent-foreground: #6cf93d;
+  --sidebar-accent-foreground: #0d1314;
   --sidebar-border: #1a2425;
   --sidebar-ring: #4ab92e;
 }

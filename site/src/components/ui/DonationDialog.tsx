@@ -57,8 +57,8 @@ export function DonationDialog({
   const sampleNonprofits: Nonprofit[] = [
     {
       address: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199" as `0x${string}`,
-      name: "Medical Assistance Foundation",
-      ein: "83-4567890"
+      name: "Youth Entrepreneurship Association",
+      ein: "92-1584371"
     },
     {
       address: "0x7F1554A41f570f023653Cce7A7bbE8986AA8f414" as `0x${string}`,
@@ -86,11 +86,11 @@ export function DonationDialog({
   const sampleCampaigns: Campaign[] = [
     {
       id: "1",
-      title: "Help Sarah's Medical Treatment",
-      description: "Support Sarah in her fight against cancer with life-saving treatment.",
+      title: "Support the Youth Entrepreneurship Association",
+      description: "Financial education for young entrepreneurs.",
       nonprofitAddress: "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199" as `0x${string}`,
-      nonprofitName: "Medical Assistance Foundation",
-      ein: "83-4567890",
+      nonprofitName: "Youth Entrepreneurship Association",
+      ein: "92-1584371",
       goal: 50000
     },
     {
@@ -180,7 +180,7 @@ export function DonationDialog({
         }
       }
     }
-  }, [isOpen, nonprofitAddress, nonprofitName, sampleCampaigns, sampleNonprofits]);
+  }, [isOpen, nonprofitAddress, nonprofitName]);
 
   // Handle campaign selection
   const handleCampaignSelect = (campaign: Campaign) => {

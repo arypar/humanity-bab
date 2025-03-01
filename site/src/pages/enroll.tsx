@@ -131,38 +131,39 @@ const EnrollPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-emerald-800 mb-4">Enroll Your Nonprofit</h1>
-          <p className="text-gray-600">Register your 501(c)(3) organization to start accepting tax-deductible crypto donations</p>
+          <h1 className="text-3xl font-bold text-white mb-4">Enroll Your Nonprofit</h1>
+          <p className="text-gray-400">Register your 501(c)(3) organization to start accepting tax-deductible crypto donations</p>
         </div>
 
         <ClientOnly>
-          <Card>
-            <CardHeader>
-              <CardTitle>Organization Details</CardTitle>
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader className="border-b border-gray-100">
+              <CardTitle className="text-black">Organization Details</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {!isConnected ? (
                 <div className="text-center py-4">
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-700 mb-4">
                     Please connect your Ethereum wallet to register your nonprofit
                   </p>
                 </div>
               ) : verificationStatus.step === 'idle' || verificationStatus.step === 'failed' ? (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="orgName">Organization Name</Label>
+                    <Label htmlFor="orgName" className="text-gray-800">Organization Name</Label>
                     <Input
                       id="orgName"
                       value={orgName}
                       onChange={(e) => setOrgName(e.target.value)}
                       placeholder="Enter organization's legal name"
                       disabled={!isConnected || isWrongNetwork}
+                      className="border-gray-300 focus:border-black focus:ring-black text-black"
                     />
                     {errors.orgName && <p className="text-sm text-red-500">{errors.orgName}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="ein">EIN Number</Label>
+                    <Label htmlFor="ein" className="text-gray-800">EIN Number</Label>
                     <Input
                       id="ein"
                       value={ein}
@@ -175,6 +176,7 @@ const EnrollPage: React.FC = () => {
                       placeholder="Enter your EIN (e.g., 12345678)"
                       maxLength={9}
                       disabled={!isConnected || isWrongNetwork}
+                      className="border-gray-300 focus:border-black focus:ring-black text-black"
                     />
                     {errors.ein && <p className="text-sm text-red-500">{errors.ein}</p>}
                   </div>
@@ -198,7 +200,7 @@ const EnrollPage: React.FC = () => {
                   
                   <Button 
                     type="submit" 
-                    className="w-full bg-emerald-600 hover:bg-emerald-700"
+                    className="w-full bg-black hover:bg-gray-800 text-white"
                     disabled={!isConnected || isWrongNetwork}
                   >
                     Submit Application
@@ -214,21 +216,24 @@ const EnrollPage: React.FC = () => {
                 </form>
               ) : verificationStatus.step === 'verifying' ? (
                 <div className="flex flex-col items-center">
-                  <Loader2 className="animate-spin w-10 h-10 text-emerald-600" />
-                  <p className="text-lg font-medium mt-2">Verifying EIN...</p>
+                  <Loader2 className="animate-spin w-10 h-10 text-black" />
+                  <p className="text-lg font-medium mt-2 text-gray-800">Verifying EIN...</p>
                 </div>
               ) : (
-                <div className="bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center">
-                  <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold text-emerald-800 mb-4">Verification Complete!</h3>
+                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 text-center">
+                  <CheckCircle className="w-12 h-12 text-black mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-black mb-4">Verification Complete!</h3>
                   <p className="text-gray-700">EIN Verified: {verificationStatus.orgDetails?.[0]}</p>
                   <p className="text-gray-700">Organization: {verificationStatus.orgDetails?.[1]}</p>
+                  <p className="text-sm text-gray-600 mt-2">
+                        Your on-chain identity has been issued using Humanity Protocol.
+                      </p>
                   
                   {!registrationSuccess ? (
                     <div className="mt-6">
                       <Button
                         onClick={handleRegisterWithContract}
-                        className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2"
+                        className="bg-black hover:bg-gray-800 text-white flex items-center gap-2"
                         disabled={isRegistering}
                       >
                         {isRegistering ? (
@@ -249,13 +254,16 @@ const EnrollPage: React.FC = () => {
                       )}
                     </div>
                   ) : (
-                    <div className="mt-6 p-4 bg-emerald-100 rounded-lg">
-                      <CheckCircle className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
-                      <p className="font-medium text-emerald-800">
+                    <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                      <CheckCircle className="w-8 h-8 text-black mx-auto mb-2" />
+                      <p className="font-medium text-gray-800">
                         Successfully registered on the blockchain!
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
                         Your organization is now ready to receive donations.
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Your on-chain identity has been issued using Humanity Protocol.
                       </p>
                     </div>
                   )}

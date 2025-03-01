@@ -59,8 +59,8 @@ const Dashboard: React.FC = () => {
   const sampleCampaigns: Campaign[] = [
     {
       id: "1",
-      title: "Help Sarah's Medical Treatment",
-      description: "Support Sarah in her fight against cancer with life-saving treatment.",
+      title: "Youth Entrepreneurship Association",
+      description: "Financial education for young entrepreneurs.",
       currentAmount: 15000,
       goalAmount: 50000,
       donorCount: 234
@@ -318,6 +318,10 @@ const Dashboard: React.FC = () => {
                     
                     <Button 
                       className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center gap-2"
+                      onClick={() => {
+                        setSelectedCampaign(null);
+                        setShowDonationDialog(true);
+                      }}
                     >
                       <Heart className="w-4 h-4" />
                       Donate Now
