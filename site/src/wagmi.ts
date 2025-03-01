@@ -1,3 +1,5 @@
+"use client";
+
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import {
   sepolia,
@@ -29,12 +31,21 @@ const humanityTestnet: Chain = {
   testnet: true
 };
 
+const enableTestnets = 
+  typeof process !== 'undefined' && 
+  process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true';
+
+const projectId = 
+  typeof process !== 'undefined' ? 
+  (process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || 'YOUR_PROJECT_ID') : 
+  'YOUR_PROJECT_ID';
+
 export const config = getDefaultConfig({
-  appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: 'Nonprofit Crypto Donation Platform',
+  projectId: projectId,
   chains: [
+    sepolia,
     humanityTestnet,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
   ],
   ssr: true,
 });

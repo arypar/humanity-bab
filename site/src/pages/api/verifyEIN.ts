@@ -1,34 +1,37 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
-import { promises as fs } from 'fs';
+import fs from "fs/promises";
 
 const CSV_FILE_PATH = path.join(process.cwd(), "data", "ExemptOrganizations.csv");
 
-function binarySearchEIN(csvLines: string[], targetEIN: string): string | null {
+const binarySearchEIN = (csvData: string[], ein: string) => {
   let left = 0;
-  let right = csvLines.length - 1;
+  let right = csvData.length - 1;
 
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
-    const line = csvLines[mid];
-    const [ein] = line.split(",");
+    const row = csvData[mid].split(",");
+    const midEIN = row[0].trim(); // Keep EIN as a string
 
-    // Remove quotes for comparison
-    const cleanEin = ein.replace(/"/g, '');
+    console.log("\n\n-------\nmidEIN:", midEIN);
+    console.log("search EIN:", ein);
+    console.log("\nComparing:", midEIN, "vs.", ein, "\n---\n");
 
-    console.log(`Comparing: ${cleanEin} with target: ${targetEIN}`);
-
-    if (cleanEin === targetEIN) {
-      return line;
-    } else if (cleanEin < targetEIN) {
+    if (midEIN === ein) {
+      console.log("Found EIN in CSV");
+      return row;
+    } else if (midEIN < ein) {
       left = mid + 1;
     } else {
       right = mid - 1;
     }
   }
 
+  // EIN not found
   return null;
-}
+};
+
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -40,23 +43,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const cleanEin = ein.replace("-", "");
 
-  console.log("Received EIN:", ein);
-  console.log("Cleaned EIN:", cleanEin);
-
   try {
     const data = await fs.readFile(CSV_FILE_PATH, "utf8");
     const csvLines = data.trim().split("\n");
-
-    console.log("Number of lines in CSV:", csvLines.length);
-    console.log("First 5 lines of CSV:", csvLines.slice(0, 5));
-
     const foundRow = binarySearchEIN(csvLines, cleanEin);
 
     if (foundRow) {
-      console.log("Matching row found:", foundRow);
       return res.status(200).json({ success: true, organization: foundRow });
     } else {
-      console.log("No matching EIN found");
       return res.status(404).json({ success: false, error: "No matching EIN found." });
     }
   } catch (error) {
