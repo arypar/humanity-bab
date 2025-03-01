@@ -11,18 +11,27 @@ const binarySearchEIN = (csvData: string[], ein: string) => {
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
     const row = csvData[mid].split(",");
-    const midEIN = row[0].trim();
+    const midEIN = row[0].trim(); // Keep EIN as a string
+
+    console.log("\n\n-------\nmidEIN:", midEIN);
+    console.log("search EIN:", ein);
+    console.log("\nComparing:", midEIN, "vs.", ein, "\n---\n");
 
     if (midEIN === ein) {
-      return row; 
+      console.log("Found EIN in CSV");
+      return row;
     } else if (midEIN < ein) {
       left = mid + 1;
     } else {
       right = mid - 1;
     }
   }
-  return null; 
+
+  // EIN not found
+  return null;
 };
+
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {

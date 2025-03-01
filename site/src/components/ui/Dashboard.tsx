@@ -49,13 +49,14 @@ const Dashboard: React.FC = () => {
   const [showCampaigns, setShowCampaigns] = React.useState(false);
   const [buttonPosition, setButtonPosition] = React.useState({ x: 0, y: 0 });
   const [showDonationDialog, setShowDonationDialog] = React.useState(false);
+  const [showSampleCampaigns, setShowSampleCampaigns] = React.useState(false);
   
   // Get verified nonprofits
   const { useAllNonprofits } = useDonationContract();
   const { data: nonprofitAddresses, isLoading: loadingNonprofits } = useAllNonprofits();
 
-  // Mock data - replace with real API data
-  const campaigns: Campaign[] = [
+  // Sample campaigns for direct donation
+  const sampleCampaigns: Campaign[] = [
     {
       id: "1",
       title: "Help Sarah's Medical Treatment",
@@ -86,11 +87,18 @@ const Dashboard: React.FC = () => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Open donation dialog instead of campaigns
+    // Show sample campaigns when Donate Now is clicked
+    setShowSampleCampaigns(true);
+  };
+
+  // Handle sample campaign selection
+  const handleCampaignSelect = (campaign: Campaign) => {
+    setSelectedCampaign(campaign);
+    setShowSampleCampaigns(false);
     setShowDonationDialog(true);
   };
 
-  // Default nonprofit address for testing - this would come from your contract in production
+  // Default nonprofit address for testing
   const defaultNonprofitAddress = '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199';
 
   return (
@@ -160,19 +168,78 @@ const Dashboard: React.FC = () => {
         </div>
       </motion.div>
 
+      {/* Sample Campaigns Modal */}
+      {showSampleCampaigns && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowSampleCampaigns(false)}
+          />
+          
+          <div 
+            className="bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-6 w-full max-w-md relative z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowSampleCampaigns(false)}
+              className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-500">
+                Select a Campaign
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                Choose a campaign to support with your donation
+              </p>
+            </div>
+            
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {sampleCampaigns.map((campaign) => (
+                <div 
+                  key={campaign.id}
+                  className="rounded-lg border border-gray-200 p-4 hover:border-emerald-300 hover:bg-emerald-50 cursor-pointer transition-colors"
+                  onClick={() => handleCampaignSelect(campaign)}
+                >
+                  <h3 className="font-medium text-emerald-700">{campaign.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{campaign.description}</p>
+                  <div className="mt-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-emerald-500 h-2.5 rounded-full" 
+                        style={{ width: `${(campaign.currentAmount / campaign.goalAmount) * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>${campaign.currentAmount.toLocaleString()} raised</span>
+                      <span>Goal: ${campaign.goalAmount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center mt-3 text-xs">
+                    <span className="text-emerald-600 font-medium">{campaign.nonprofitName}</span>
+                    <span className="text-gray-500">{campaign.donorCount} donors</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Donation Dialog */}
       <ClientOnly>
         <DonationDialog 
           isOpen={showDonationDialog}
           onClose={() => setShowDonationDialog(false)}
-          // If there are verified nonprofits from the contract, use the first one
-          // Otherwise use a default address for testing
           nonprofitAddress={
-            nonprofitAddresses && Array.isArray(nonprofitAddresses) && nonprofitAddresses.length > 0 
+            selectedCampaign ? selectedCampaign.nonprofitAddress :
+            (nonprofitAddresses && Array.isArray(nonprofitAddresses) && nonprofitAddresses.length > 0 
               ? (nonprofitAddresses[0] as `0x${string}`) 
-              : (defaultNonprofitAddress as `0x${string}`)
+              : (defaultNonprofitAddress as `0x${string}`))
           }
-          nonprofitName="Verified Nonprofit"
+          nonprofitName={selectedCampaign ? selectedCampaign.nonprofitName : "Verified Nonprofit"}
         />
       </ClientOnly>
 

@@ -78,48 +78,21 @@ const EnrollPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-  
     if (!validateForm()) {
       return;
     }
 
     console.log("Submitting verification request...");
     setVerificationStatus({ step: "verifying" });
-
-    try {
-      const response = await fetch('https://issuer.humanity.org/credentials/issue', {
-        method: 'POST',
-        headers: {
-          "X-API-Token": "ce9cae73-4a03-472c-91ee-d630e86511c0",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          "subject_address": address,
-          "claims": {
-            "nonprofit": "true",
-          }
-        })
+    
+    // Simulate verification delay
+    setTimeout(() => {
+      setVerificationStatus({ 
+        step: "complete", 
+        orgDetails: [ein, orgName]
       });
-      
-      if(response.status == 200 || response.status == 201) {
-        const responseData = await response.json();
-        await fetch("http://localhost:3001/api/upload", {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ ethAddress: address, jsonData: responseData })
-        });
-        setVerificationStatus({ step: "complete", orgDetails: [ein, orgName]});
-        setCredential(responseData.credential);
-        setWalletVerified(true);
-      } else {
-        setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
-      }
-    } catch (error) {
-      console.error("Error during EIN verification:", error);
-      setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
-    }
+      setWalletVerified(true);
+    }, 1500);
   };
 
   const handleRegisterWithContract = async () => {
