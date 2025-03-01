@@ -71,7 +71,8 @@ const EnrollPage: React.FC = () => {
       console.log("Received API response:", data);
 
       if (data.success) {
-        setVerificationStatus({ step: "complete", orgDetails: data.organization });
+        const orgDetails = data.organization.split(',').map((item: string) => item.replace(/"/g, '').trim());
+        setVerificationStatus({ step: "complete", orgDetails });
       } else {
         setVerificationStatus({ step: "failed", error: data.error });
       }
@@ -79,6 +80,52 @@ const EnrollPage: React.FC = () => {
       console.error("Error during EIN verification:", error);
       setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
     }
+
+
+
+    console.log("verified properly, now moving on to sending credentials")
+
+
+
+    e.preventDefault();
+    setErrors({});
+  
+    if (!validateForm()) {
+      return;
+    }
+
+    console.log("Submitting verification request...");
+    setVerificationStatus({ step: "verifying" });
+
+    try {
+
+      
+        const response = await fetch('https://issuer.humanity.org/credentials/issue', {
+          method: 'POST',
+          headers: {
+            "X-API-Token": "ce9cae73-4a03-472c-91ee-d630e86511c0",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            "subject_address": address,
+            "claims": {
+              "nonprofit": "true",
+            }
+          })
+      });
+      if(response.status == 200 || response.status == 201) {
+        const responseData = await response.json();
+        setVerificationStatus({ step: "complete", orgDetails: ["BRuh"]});
+        setCredential(responseData.credential);
+      } else {
+        setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
+      }
+    
+    } catch (error) {
+      console.error("Error during EIN verification:", error);
+      setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
+    }
+
   };
 
 /*
@@ -199,12 +246,12 @@ const EnrollPage: React.FC = () => {
               <div className="bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center">
                 <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-emerald-800 mb-4">Verification Complete!</h3>
-                <p className="text-gray-700">EIN Verified: {verificationStatus.orgDetails?.[0]}</p>
+                <p className="text-gray-700">EIN: {verificationStatus.orgDetails?.[0]}</p>
                 <p className="text-gray-700">Organization: {verificationStatus.orgDetails?.[1]}</p>
-                <p className="text-gray-700">Credential: {typeof credential === 'object' ? 
-                  JSON.stringify(credential).substring(0, 50) + '...' : 
-                  credential}
-                </p>
+                <p className="text-gray-700">City: {verificationStatus.orgDetails?.[2]}</p>
+                <p className="text-gray-700">State: {verificationStatus.orgDetails?.[3]}</p>
+                <p className="text-gray-700">Country: {verificationStatus.orgDetails?.[4]}</p>
+
               </div>
             )}
           </CardContent>
