@@ -62,6 +62,7 @@ const EnrollPage: React.FC = () => {
     setVerificationStatus({ step: "verifying" });
 
     try {
+
       const response = await fetch("/api/verifyEIN", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,7 +71,7 @@ const EnrollPage: React.FC = () => {
 
       const data = await response.json();
       console.log("Received API response:", data);
-
+      
       if (data.success) {
 
         const response = await fetch('https://issuer.humanity.org/credentials/issue', {
