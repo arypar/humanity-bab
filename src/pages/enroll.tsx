@@ -8,6 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, CheckCircle, AlertCircle } from "lucide-react";
 import UploadButton from "@/components/ui/UploadButton";
+import fs from "fs";
+import path from "path";
+
+const CSV_FILE_PATH = path.resolve(__dirname, "../../data/ExemptOrganizations.csv");
+
+
+
+
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -27,7 +35,7 @@ const itemVariants = {
 };
 
 interface VerificationStatus {
-  step: 'idle' | 'scanning' | 'verifying' | 'security' | 'complete';
+  step: 'idle' | 'scanning' | 'verifying' | 'security' | 'complete' | 'failed';
   orgType?: string;
   error?: string;
 }
@@ -61,6 +69,10 @@ const EnrollPage: React.FC = () => {
     complete: {
       title: "Registration Complete!",
       description: "Your organization has been successfully verified."
+    },
+    failed: {
+      title: "Verification Failed",
+      description: "Please try again or contact support."
     }
   };
 
@@ -132,6 +144,45 @@ const EnrollPage: React.FC = () => {
       });
     }
   };
+  const binarySearchEIN = (csvData: string[], ein: string) => {
+    let left = 0;
+    let right = csvData.length - 1;
+  
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const row = csvData[mid].split(","); // Manually split CSV line
+      const midEIN = row[0].trim();
+  
+      if (midEIN === ein) {
+        return row; // Return full row if EIN matches
+      } else if (midEIN < ein) {
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return null; // EIN not found
+  };
+  
+  const verifyOrganization = async (ein: string, orgName: string) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(CSV_FILE_PATH, "utf8", (err, data) => {
+        if (err) {
+          reject("Error reading database file.");
+          return;
+        }
+  
+        const csvLines = data.trim().split("\n"); // Read all lines into array
+        const foundRow = binarySearchEIN(csvLines, ein);
+  
+        if (foundRow && foundRow[1].trim().toLowerCase() === orgName.trim().toLowerCase()) {
+          resolve(foundRow);
+        } else {
+          reject("No matching organization found.");
+        }
+      });
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,11 +191,14 @@ const EnrollPage: React.FC = () => {
     if (!validateForm()) {
       return;
     }
-
+  
+    setVerificationStatus({ step: "verifying" });
+  
     try {
-      await simulateVerification();
-    } catch (err) {
-      setErrors({ submit: "An error occurred while submitting. Please try again." });
+      const result = await verifyOrganization(ein, orgName);
+      setVerificationStatus({ step: "complete" });
+    } catch (error) {
+      setVerificationStatus({ step: "failed" });
     }
   };
 
