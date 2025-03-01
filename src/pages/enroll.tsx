@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAccount } from 'wagmi';
 import { Label } from "@/components/ui/label";
 import { Upload, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import UploadButton from "@/components/ui/UploadButton";
@@ -73,26 +72,7 @@ const EnrollPage: React.FC = () => {
       console.log("Received API response:", data);
       
       if (data.success) {
-
-        const response = await fetch('https://issuer.humanity.org/credentials/issue', {
-          method: 'POST',
-          headers: {
-            "X-API-Token": "ce9cae73-4a03-472c-91ee-d630e86511c0",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            "subject_address": address,
-            "claims": {
-              "nonprofit": "true",
-            }
-          })
-      });
-      if(response.status == 200) {
         setVerificationStatus({ step: "complete", orgDetails: data.organization });
-      } else {
-        setVerificationStatus({ step: "failed", error: "Verification failed. Please try again." });
-      }
-
       } else {
         setVerificationStatus({ step: "failed", error: data.error });
       }
