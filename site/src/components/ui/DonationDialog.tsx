@@ -142,7 +142,7 @@ export function DonationDialog({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Donation Amount (ETH)</Label>
+                  <Label htmlFor="amount">Donation Amount (Sepolia ETH)</Label>
                   <div className="relative">
                     <Input
                       id="amount"
@@ -158,7 +158,10 @@ export function DonationDialog({
                     </div>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Minimum donation: 0.001 ETH
+                    Minimum donation: 0.001 Sepolia ETH
+                  </p>
+                  <p className="text-xs text-amber-600">
+                    Make sure you're connected to the Sepolia network to make donations
                   </p>
                 </div>
                 

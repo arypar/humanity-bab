@@ -66,6 +66,17 @@ export function useDonationContract() {
       setError(null);
       
       try {
+        // Verify we're on Sepolia network before proceeding
+        if (window.ethereum) {
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          if (chainId !== '0xaa36a7') { // Sepolia chainId
+            setError('Please switch to the Sepolia network before donating');
+            setIsLoading(false);
+            return;
+          }
+        }
+        
+        // Proceed with donation
         writeContract({
           address: DONATION_CONTRACT_ADDRESS as `0x${string}`,
           abi: DonationContractABI.abi,

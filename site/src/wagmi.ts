@@ -44,8 +44,8 @@ export const config = getDefaultConfig({
   appName: 'Nonprofit Crypto Donation Platform',
   projectId: projectId,
   chains: [
+    sepolia,
     humanityTestnet,
-    ...(enableTestnets ? [sepolia] : []),
   ],
   ssr: true,
 });

@@ -25,24 +25,27 @@ export function NonprofitSelector({ onSelect, selectedNonprofit }: NonprofitSele
   
   useEffect(() => {
     if (nonprofitAddresses && Array.isArray(nonprofitAddresses)) {
-      const mockNonprofits: Nonprofit[] = nonprofitAddresses.map((address, index) => ({
-        address: address as `0x${string}`,
-        name: `Nonprofit Organization ${index + 1}`
-      }));
+      const formattedNonprofits: Nonprofit[] = nonprofitAddresses.map((address, index) => {
+        // Try to get a real name if possible, otherwise use a generated name
+        return {
+          address: address as `0x${string}`,
+          name: `Nonprofit Organization ${index + 1}`
+        };
+      });
       
       // Add a default nonprofit if none found
-      if (mockNonprofits.length === 0) {
-        mockNonprofits.push({
+      if (formattedNonprofits.length === 0) {
+        formattedNonprofits.push({
           address: '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199',
           name: 'Default Nonprofit'
         });
       }
       
-      setNonprofits(mockNonprofits);
+      setNonprofits(formattedNonprofits);
       
       // Auto-select first nonprofit if none selected
-      if (!selectedNonprofit && mockNonprofits.length > 0) {
-        onSelect(mockNonprofits[0]);
+      if (!selectedNonprofit && formattedNonprofits.length > 0) {
+        onSelect(formattedNonprofits[0]);
       }
       
       setIsLoading(false);

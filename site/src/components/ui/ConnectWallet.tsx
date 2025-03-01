@@ -31,11 +31,45 @@ export function ConnectWallet() {
             variant="destructive" 
             size="sm"
             className="text-xs"
-            onClick={() => {
-              window.ethereum?.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0xAA36A7' }],
-              }).catch(console.error);
+            onClick={async () => {
+              try {
+                // Check if window.ethereum exists
+                if (!window.ethereum) {
+                  console.error('MetaMask is not installed');
+                  return;
+                }
+                
+                await window.ethereum.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: '0xAA36A7' }], // Sepolia chainId in hex
+                });
+              } catch (switchError: any) {
+                // This error code indicates that the chain has not been added to MetaMask
+                if (switchError.code === 4902) {
+                  try {
+                    await window.ethereum.request({
+                      method: 'wallet_addEthereumChain',
+                      params: [
+                        {
+                          chainId: '0xAA36A7',
+                          chainName: 'Sepolia Testnet',
+                          nativeCurrency: {
+                            name: 'Sepolia ETH',
+                            symbol: 'SEP',
+                            decimals: 18
+                          },
+                          rpcUrls: ['https://rpc.sepolia.org'],
+                          blockExplorerUrls: ['https://sepolia.etherscan.io']
+                        }
+                      ]
+                    });
+                  } catch (addError) {
+                    console.error('Error adding Sepolia network:', addError);
+                  }
+                } else {
+                  console.error('Failed to switch to Sepolia network:', switchError);
+                }
+              }
             }}
           >
             Switch to Sepolia
