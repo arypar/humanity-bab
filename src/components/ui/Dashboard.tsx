@@ -32,6 +32,8 @@ const itemVariants = {
 
 const Dashboard: React.FC = () => {
   const [selectedCampaign, setSelectedCampaign] = React.useState<Campaign | null>(null);
+  const [showCampaigns, setShowCampaigns] = React.useState(false);
+  const [buttonPosition, setButtonPosition] = React.useState({ x: 0, y: 0 });
 
   // Mock data - replace with real API data
   const campaigns: Campaign[] = [
@@ -60,6 +62,13 @@ const Dashboard: React.FC = () => {
       donorCount: 189
     }
   ];
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setButtonPosition({ x: e.clientX, y: e.clientY });
+    setShowCampaigns(true);
+  };
 
   return (
     <div className="w-full mx-auto p-6 max-w-7xl flex flex-col items-center justify-center min-h-screen">
@@ -116,6 +125,7 @@ const Dashboard: React.FC = () => {
           <Button 
             size="lg" 
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-6 text-lg rounded-lg shadow-md transition-all duration-200 hover:shadow-lg"
+            onClick={handleButtonClick}
           >
             <span className="flex items-center gap-2">
               <Heart className="h-5 w-5" />
@@ -174,8 +184,27 @@ const Dashboard: React.FC = () => {
                         ${selectedCampaign.currentAmount.toLocaleString()}
                         <span className="text-gray-500"> of ${selectedCampaign.goalAmount.toLocaleString()}</span>
                       </div>
-                      <div className="text-gray-500">
-                        {selectedCampaign.donorCount} donors
+                      <div className="flex items-center mt-1">
+                        <div className="flex -space-x-2 mr-2">
+                          {[...Array(Math.min(3, Math.ceil(selectedCampaign.donorCount / 100)))].map((_, i) => (
+                            <div 
+                              key={i}
+                              className={`w-6 h-6 rounded-full border-2 border-white ${
+                                ['bg-blue-400', 'bg-emerald-400', 'bg-purple-400'][i % 3]
+                              } flex items-center justify-center text-[10px] text-white font-bold`}
+                            >
+                              {String.fromCharCode(65 + i)}
+                            </div>
+                          ))}
+                          {selectedCampaign.donorCount > 300 && (
+                            <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-[10px] text-gray-600 font-bold">
+                              +
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-gray-500">
+                          {selectedCampaign.donorCount} donors
+                        </span>
                       </div>
                     </div>
                     
@@ -190,6 +219,103 @@ const Dashboard: React.FC = () => {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Campaigns Popup */}
+      <AnimatePresence>
+        {showCampaigns && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setShowCampaigns(false)}>
+            <motion.div 
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCampaigns(false)}
+            />
+            
+            <motion.div
+              className="bg-white rounded-xl shadow-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto z-50 relative mx-4"
+              initial={{ 
+                opacity: 0, 
+                scale: 0.9,
+                y: buttonPosition.y - window.innerHeight / 2
+              }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                y: 0
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 0.9,
+                y: buttonPosition.y - window.innerHeight / 2
+              }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-emerald-800">Choose a Campaign</h2>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setShowCampaigns(false)}
+                  className="rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="grid gap-4"
+              >
+                {campaigns.map((campaign) => {
+                  const progress = Math.min(100, Math.round((campaign.currentAmount / campaign.goalAmount) * 100));
+                  
+                  return (
+                    <motion.div
+                      key={campaign.id}
+                      variants={itemVariants}
+                      className="border border-gray-100 rounded-lg overflow-hidden hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => {
+                        setSelectedCampaign(campaign);
+                        setShowCampaigns(false);
+                      }}
+                    >
+                      <div className="p-4">
+                        <div className="flex flex-col">
+                          <h3 className="text-base font-semibold text-emerald-700 truncate mb-1.5">
+                            {campaign.title}
+                          </h3>
+                          <div className="space-y-1">
+                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className="h-full bg-emerald-500 rounded-full"
+                              />
+                            </div>
+                            <div className="flex justify-between items-baseline text-sm">
+                              <span className="font-medium text-emerald-700">
+                                ${campaign.currentAmount.toLocaleString()}
+                              </span>
+                              <span className="text-gray-500 text-xs">
+                                of ${campaign.goalAmount.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
